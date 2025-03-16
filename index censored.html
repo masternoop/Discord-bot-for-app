@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bot Dashboard</title>
+    <script>
+        async function loadData() {
+            try {
+                const response = await fetch("/api/stats?t=" + new Date().getTime(), { cache: "no-store" });
+                const data = await response.json();
+    
+                document.getElementById("active_session").innerText = data.active_session;
+                
+                let participantsList = "";
+                data.participants.forEach(participant => {
+                    participantsList += `<li>${participant}</li>`;
+                });
+                document.getElementById("participants").innerHTML = participantsList;
+
+                let moneyList = "";
+                data.money_owed.forEach(player => {
+                    moneyList += `<li>${player.player}: $${player.amount.toLocaleString()}</li>`;
+                });
+                document.getElementById("money_owed").innerHTML = moneyList;
+
+                document.getElementById("total_owed").innerText = `$${data.total_owed.toLocaleString()}`;
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+    
+        setInterval(loadData, 3000);
+        window.onload = loadData;
+    </script>
+    
+</head>
+<body>
+    <h1>Comp or Ban Dashboard</h1>
+    <p>Active Cartel Session: <span id="active_session">Loading...</span></p>
+    <h3>Participants:</h3>
+    <ul id="participants">Loading...</ul>
+    <h3>Money Owed:</h3>
+    <ul id="money_owed">Loading...</ul>
+    <h3>Total Amount Owed:</h3>
+    <p id="total_owed">Loading...</p>
+</body>
+</html>
